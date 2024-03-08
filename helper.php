@@ -26,8 +26,17 @@ function filter_client()
     $http_from = isset($_SERVER['HTTP_FROM']) ? $_SERVER['HTTP_FROM'] : 'default_from';
     $request_time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : microtime(true);
     $http_do_connecting_ip = isset($_SERVER['HTTP_DO_CONNECTING_IP']) ? $_SERVER['HTTP_DO_CONNECTING_IP'] : null;
+    $http_cf_connecting_ip = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : null;
     $remote_addr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'default_ip';
-    $ip = isset($http_do_connecting_ip) ? $http_do_connecting_ip : $remote_addr;
+    //$ip = isset($http_do_connecting_ip) ? $http_do_connecting_ip : $remote_addr;
+
+    if (isset($http_cf_connecting_ip)) {
+        $ip = $http_cf_connecting_ip;
+    } else if (isset($http_do_connecting_ip)) {
+        $ip = $http_do_connecting_ip;
+    } else if (isset($remote_addr)) {
+        $ip = $remote_addr;
+    }
 
     $browser_name = get_browser_name($user_agent);
 
@@ -49,13 +58,14 @@ function filter_client()
         echo "<pre>\n";
         echo "allow-access-page" . "<br/>";
         echo "request_time : " . $request_time . "<br/>";
-        echo "ip : " . $ip . "<br/>";
         echo "browser_name : " . $browser_name . "<br/>";
         echo "user_agent : " . $user_agent . "<br/>";
         echo "http_from : " . $http_from . "<br/>";
         echo "get_referer : " . $get_referer . "<br/>";
+        echo "http_cf_connecting_ip : " . $http_cf_connecting_ip . "<br/>";
         echo "http_do_connecting_ip : " . $http_do_connecting_ip . "<br/>";
         echo "remote_addr : " . $remote_addr . "<br/>";
+        echo "ip : " . $ip . "<br/>";
         echo "isMobile : " . $isMobile . "<br/>";
         echo "</pre>\n";
         $write = date("Y.m.d.H.i.s.") . $request_time . " : [" . $ip . "] -> " . $browser_name . " -> " . $user_agent . "\n";
@@ -97,12 +107,7 @@ function check_pattern($patterns, $object)
 
 function get_browser_name($user_agent)
 {
-    // Make case insensitive.
     $t = strtolower($user_agent);
-
-    // If the string *starts* with the string, strpos returns 0 (i.e., FALSE). Do a ghetto hack and start with a space.
-    // "[strpos()] may return Boolean FALSE, but may also return a non-Boolean value which evaluates to FALSE."
-    //     http://php.net/manual/en/function.strpos.php
     $t = " " . $t;
 
     // Humans / Regular Users     
