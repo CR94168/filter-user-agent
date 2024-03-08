@@ -1,5 +1,4 @@
 <?php
-
 function filter_client()
 {
 
@@ -16,9 +15,9 @@ function filter_client()
 
     //var_dump($patterns);
 
-    echo "<pre>";
-    echo "checking...<br>";
-    echo "</pre>";
+    echo "<pre>\n";
+    echo "checking...<br/>";
+    echo "</pre>\n";
 
 
     // get_var
@@ -37,46 +36,46 @@ function filter_client()
     }
 
     if (check_pattern($patterns, $browser_name)) {
-        // echo "detect-suspicious-browser-name"."<br>";
+        // echo "detect-suspicious-browser-name"."<br/>";
         log_detect($request_time, $ip, $browser_name, "detect-suspicious-browser-name");
     } else if (check_pattern($patterns, $user_agent)) {
-        // echo "detect-suspicious-user-agnet"."<br>";
+        // echo "detect-suspicious-user-agnet"."<br/>";
         log_detect($request_time, $ip, $user_agent, "detect-suspicious-user-agent");
     } else if (check_pattern($patterns, $http_from)) {
-        // echo "detect-suspicious-http-from"."<br>";
+        // echo "detect-suspicious-http-from"."<br/>";
         log_detect($request_time, $ip, $http_from, "detect-suspicious-http-from");
     } else {
         // allow access page
-        echo "<pre>";
-        echo "allow-access-page" . "<br>";
-        echo "request_time : " . $request_time . "<br>";
-        echo "ip : " . $ip . "<br>";
-        echo "browser_name : " . $browser_name . "<br>";
-        echo "user_agent : " . $user_agent . "<br>";
-        echo "http_from : " . $http_from . "<br>";
-        echo "get_referer : " . $get_referer . "<br>";
-        echo "http_do_connecting_ip : " . $http_do_connecting_ip . "<br>";
-        echo "remote_addr : " . $remote_addr . "<br>";
-        echo "isMobile : " . $isMobile . "<br>";
-        echo "</pre>";
+        echo "<pre>\n";
+        echo "allow-access-page" . "<br/>";
+        echo "request_time : " . $request_time . "<br/>";
+        echo "ip : " . $ip . "<br/>";
+        echo "browser_name : " . $browser_name . "<br/>";
+        echo "user_agent : " . $user_agent . "<br/>";
+        echo "http_from : " . $http_from . "<br/>";
+        echo "get_referer : " . $get_referer . "<br/>";
+        echo "http_do_connecting_ip : " . $http_do_connecting_ip . "<br/>";
+        echo "remote_addr : " . $remote_addr . "<br/>";
+        echo "isMobile : " . $isMobile . "<br/>";
+        echo "</pre>\n";
         $write = date("Y.m.d.H.i.s.") . $request_time . " : [" . $ip . "] -> " . $browser_name . " -> " . $user_agent . "\n";
         file_put_contents('./ACCESS_' . date("Y.m.d") . '.log', $write, FILE_APPEND);
     }
 
-    echo "<pre>";
-    echo "finish" . "<br>";
-    echo "</pre>";
+    echo "<pre>\n";
+    echo "finish" . "<br/>";
+    echo "</pre>\n";
 }
 
 function log_detect($request_time, $ip, $object, $desc)
 {
-    echo "<pre>";
-    echo "detect-suspicious-activity" . "<br>";
-    echo "request_time : " . $request_time . "<br>";
-    echo "ip : " . $ip . "<br>";
-    echo "object : " . $object . "<br>";
-    echo "desc : " . $desc . "<br>";
-    echo "</pre>";
+    echo "<pre>\n";
+    echo "detect-suspicious-activity" . "<br/>";
+    echo "request_time : " . $request_time . "<br/>";
+    echo "ip : " . $ip . "<br/>";
+    echo "object : " . $object . "<br/>";
+    echo "desc : " . $desc . "<br/>";
+    echo "</pre>\n";
     $write = date("Y.m.d.H.i.s.") . $request_time . " : [" . $ip . "] -> " . $object . " -> " . $desc . "\n";
     file_put_contents('./DETECT_' . date("Y.m.d") . '.log', $write, FILE_APPEND);
 }
