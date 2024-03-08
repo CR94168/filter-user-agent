@@ -1,0 +1,15 @@
+{
+    "name": "cr94168/filter-user-agent",
+    "autoload": {
+        "psr-4": {
+            "Cr94168\\FilterUserAgent\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "CR94168",
+            "email": "caroline.rondnoir@gmail.com"
+        }
+    ],
+    "require": {}
+}
