@@ -1,9 +1,12 @@
 <?php
+$isMobile = false;
+$isCrawler = false;
 function filter_client()
 {
 
-    $isMobile = false;
-    $isCrawler = false;
+    global $isMobile;
+    global $isCrawler;
+
 
     $mobile_agents = '!(tablet|pad|mobile|phone|symbian|android|ipod|ios|blackberry|webos)!i';
 
@@ -27,7 +30,7 @@ function filter_client()
     $request_time = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : microtime(true);
     $http_do_connecting_ip = isset($_SERVER['HTTP_DO_CONNECTING_IP']) ? $_SERVER['HTTP_DO_CONNECTING_IP'] : null;
     $http_cf_connecting_ip = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : null;
-    $remote_addr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'default_ip';
+    $remote_addr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
     //$ip = isset($http_do_connecting_ip) ? $http_do_connecting_ip : $remote_addr;
 
     if (isset($http_cf_connecting_ip)) {
@@ -36,6 +39,8 @@ function filter_client()
         $ip = $http_do_connecting_ip;
     } else if (isset($remote_addr)) {
         $ip = $remote_addr;
+    } else {
+        $ip = "default_ip";
     }
 
     $browser_name = get_browser_name($user_agent);
@@ -46,12 +51,15 @@ function filter_client()
 
     if (check_pattern($patterns, $browser_name)) {
         // echo "detect-suspicious-browser-name"."<br/>";
+        $isCrawler = true;
         log_detect($request_time, $ip, $browser_name, "detect-suspicious-browser-name");
     } else if (check_pattern($patterns, $user_agent)) {
         // echo "detect-suspicious-user-agnet"."<br/>";
+        $isCrawler = true;
         log_detect($request_time, $ip, $user_agent, "detect-suspicious-user-agent");
     } else if (check_pattern($patterns, $http_from)) {
         // echo "detect-suspicious-http-from"."<br/>";
+        $isCrawler = true;
         log_detect($request_time, $ip, $http_from, "detect-suspicious-http-from");
     } else {
         // allow access page
@@ -75,12 +83,30 @@ function filter_client()
     echo "<pre>\n";
     echo "finish" . "<br/>";
     echo "</pre>\n";
+
+    $result = array(
+        "isMobile" => $isMobile,
+        "isCrawler" => $isCrawler,
+        "browser_name" => $browser_name,
+        "user_agent" => $user_agent,
+        "http_from" => $http_from,
+        "get_referer" => $get_referer,
+        "http_cf_connecting_ip" => $http_cf_connecting_ip,
+        "http_do_connecting_ip" => $http_do_connecting_ip,
+        "remote_addr" => $remote_addr,
+        "ip" => $ip,
+        "request_time" => $request_time
+    );
+
+    return $result;
 }
 
 function log_detect($request_time, $ip, $object, $desc)
 {
+    global $isCrawler;
     echo "<pre>\n";
     echo "detect-suspicious-activity" . "<br/>";
+    echo "isCrawler : " . $isCrawler . "<br/>";
     echo "request_time : " . $request_time . "<br/>";
     echo "ip : " . $ip . "<br/>";
     echo "object : " . $object . "<br/>";
